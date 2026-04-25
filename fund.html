@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FundSense — Detailed mutual fund analysis with NAV, returns, and risk assessment." />
+  <title>Fund Details — FundSense</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+          keyframes: {
+            pulse_dot: {
+              '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+              '50%': { opacity: '0.5', transform: 'scale(1.4)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            },
+          },
+          animation: {
+            'pulse-dot': 'pulse_dot 2s infinite',
+            'shimmer': 'shimmer 1.5s infinite',
+          },
+        },
+      },
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .gradient-text-logo {
+        background: linear-gradient(135deg, #c7d2fe 0%, #7dd3fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .gradient-btn {
+        background: linear-gradient(135deg, #6366f1, #0ea5e9);
+      }
+      .glow-indigo {
+        background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      }
+      .glow-sky {
+        background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+      }
+      .card-glass {
+        background: rgba(30, 41, 59, 0.5);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.04);
+      }
+      .skeleton {
+        background: linear-gradient(90deg, rgba(51,65,85,0.4) 25%, rgba(71,85,105,0.4) 50%, rgba(51,65,85,0.4) 75%);
+        background-size: 200% 100%;
+      }
+    }
+  </style>
+  <style>
+    ::selection { background: rgba(99, 102, 241, 0.3); }
+  </style>
+</head>
+
+<body class="m-0 p-0 font-inter bg-slate-900 text-slate-100 min-h-screen overflow-x-hidden">
+
+  <!-- Ambient background glow -->
+  <div class="fixed -top-[30%] -left-[10%] w-[600px] h-[600px] glow-indigo rounded-full pointer-events-none z-0"></div>
+  <div class="fixed -bottom-[20%] -right-[10%] w-[500px] h-[500px] glow-sky rounded-full pointer-events-none z-0"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar"
+    class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 sm:px-10 py-4 bg-slate-900/75 backdrop-blur-xl border-b border-white/[0.06]">
+    <!-- Logo -->
+    <a href="index.html" id="logo" class="flex items-center gap-2.5 cursor-pointer no-underline">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="shrink-0">
+        <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+        <path d="M9 22L13 13L17 17L23 9" stroke="white" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round" />
+        <circle cx="23" cy="9" r="2" fill="white" />
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#6366f1" />
+            <stop offset="1" stop-color="#0ea5e9" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="text-[22px] font-extrabold tracking-tight gradient-text-logo">FundSense</span>
+    </a>
+
+    <!-- Back button -->
+    <a href="index.html"
+      class="flex items-center gap-2 text-slate-400 no-underline text-sm font-medium transition-colors duration-200 hover:text-slate-200">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+      </svg>
+      Back to Search
+    </a>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="relative z-[1] pt-[100px] pb-20 px-6 max-w-4xl mx-auto">
+
+    <!-- Loading State -->
+    <div id="loading-state" class="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <svg class="animate-spin w-10 h-10" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="#334155" stroke-width="3" />
+        <path d="M12 2a10 10 0 0 1 10 10" stroke="#818cf8" stroke-width="3" stroke-linecap="round" />
+      </svg>
+      <p class="text-slate-400 text-sm font-medium">Fetching fund details...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center">
+      <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="15" y1="9" x2="9" y2="15" />
+          <line x1="9" y1="9" x2="15" y2="15" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-white mb-2">Fund Not Found</h2>
+        <p id="error-message" class="text-slate-400 text-sm max-w-md">We couldn't find the mutual fund you're looking for. It may have been delisted or the scheme code is incorrect.</p>
+      </div>
+      <a href="index.html"
+        class="mt-2 px-6 py-2.5 text-sm font-semibold text-white gradient-btn rounded-lg no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(99,102,241,0.4)]">
+        ← Search Again
+      </a>
+    </div>
+
+    <!-- Fund Details (hidden until loaded) -->
+    <div id="fund-details" class="hidden">
+
+      <!-- Fund Header -->
+      <div class="mb-8">
+        <a href="index.html"
+          class="inline-flex items-center gap-1.5 text-slate-500 text-xs font-medium no-underline hover:text-slate-300 transition-colors mb-4">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Home
+        </a>
+        <span class="text-slate-600 text-xs mx-1">/</span>
+        <span id="breadcrumb-name" class="text-slate-400 text-xs">Fund Details</span>
+
+        <h1 id="fund-name" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mt-4 mb-3 leading-tight tracking-tight"></h1>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <span id="risk-badge" class="px-3 py-1 text-xs font-semibold rounded-full"></span>
+          <span id="fund-category" class="px-3 py-1 text-xs font-medium text-slate-400 bg-slate-700/50 border border-white/[0.06] rounded-full"></span>
+          <span id="scheme-code-badge" class="px-3 py-1 text-xs font-medium text-slate-500 bg-slate-800/50 border border-white/[0.06] rounded-full"></span>
+        </div>
+      </div>
+
+      <!-- NAV Card -->
+      <div class="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 mb-6 backdrop-blur-lg">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Current NAV</p>
+            <p id="current-nav" class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">—</p>
+            <p id="nav-date" class="text-slate-500 text-xs mt-1.5"></p>
+          </div>
+          <div id="one-day-change" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 border border-white/[0.06]">
+            <span id="day-change-icon" class="w-5 h-5"></span>
+            <div>
+              <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">1-Day Change</p>
+              <p id="day-change-value" class="text-sm font-bold">—</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Returns Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- 1M Return -->
+        <div class="card-glass border border-white/[0.06] rounded-2xl p-5 backdrop-blur-lg">
+          <p class="text-slate-500 text-[11px] font-medium uppercase tracking-wider mb-2">1 Month</p>
+          <p id="return-1m" class="text-2xl font-bold tracking-tight">—</p>
+        </div>
+        <!-- 6M Return -->
+        <div class="card-glass border border-white/[0.06] rounded-2xl p-5 backdrop-blur-lg">
+          <p class="text-slate-500 text-[11px] font-medium uppercase tracking-wider mb-2">6 Months</p>
+          <p id="return-6m" class="text-2xl font-bold tracking-tight">—</p>
+        </div>
+        <!-- 1Y Return -->
+        <div class="card-glass border border-white/[0.06] rounded-2xl p-5 backdrop-blur-lg">
+          <p class="text-slate-500 text-[11px] font-medium uppercase tracking-wider mb-2">1 Year</p>
+          <p id="return-1y" class="text-2xl font-bold tracking-tight">—</p>
+        </div>
+        <!-- 3Y CAGR -->
+        <div class="card-glass border border-white/[0.06] rounded-2xl p-5 backdrop-blur-lg">
+          <p class="text-slate-500 text-[11px] font-medium uppercase tracking-wider mb-2">3 Year CAGR</p>
+          <p id="return-3y" class="text-2xl font-bold tracking-tight">—</p>
+        </div>
+      </div>
+
+      <!-- Fund Info Grid -->
+      <div class="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg">
+        <h2 class="text-base font-bold text-white mb-5 flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          Fund Information
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+          <div class="flex justify-between items-center py-2 border-b border-white/[0.04]">
+            <span class="text-slate-500 text-sm">Scheme Code</span>
+            <span id="info-code" class="text-slate-200 text-sm font-medium"></span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-white/[0.04]">
+            <span class="text-slate-500 text-sm">Fund House</span>
+            <span id="info-house" class="text-slate-200 text-sm font-medium text-right max-w-[200px]"></span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-white/[0.04]">
+            <span class="text-slate-500 text-sm">Scheme Type</span>
+            <span id="info-type" class="text-slate-200 text-sm font-medium text-right max-w-[200px]"></span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-white/[0.04]">
+            <span class="text-slate-500 text-sm">Scheme Category</span>
+            <span id="info-category" class="text-slate-200 text-sm font-medium text-right max-w-[200px]"></span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-white/[0.04]">
+            <span class="text-slate-500 text-sm">Data Points</span>
+            <span id="info-datapoints" class="text-slate-200 text-sm font-medium"></span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-white/[0.04]">
+            <span class="text-slate-500 text-sm">First NAV Date</span>
+            <span id="info-firstdate" class="text-slate-200 text-sm font-medium"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    (function () {
+      // ── Get scheme code from URL ──
+      const params = new URLSearchParams(window.location.search);
+      const schemeCode = params.get('code');
+
+      // ── DOM refs ──
+      const loadingState = document.getElementById('loading-state');
+      const errorState   = document.getElementById('error-state');
+      const fundDetails  = document.getElementById('fund-details');
+      const errorMessage = document.getElementById('error-message');
+
+      if (!schemeCode) {
+        showError('No scheme code provided. Please go back and search for a fund.');
+        return;
+      }
+
+      // ── Fetch fund data ──
+      fetchFundDetails(schemeCode);
+
+      async function fetchFundDetails(code) {
+        try {
+          const res = await fetch(`https://api.mfapi.in/mf/${code}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          if (data.status === 'FAIL' || !data.data || data.data.length === 0) {
+            throw new Error('Fund not found or no data available');
+          }
+
+          renderFund(data);
+        } catch (err) {
+          console.error('Failed to fetch fund:', err);
+          showError(`Could not load fund with scheme code "${code}". ${err.message}`);
+        }
+      }
+
+      // ── Render fund details ──
+      function renderFund(data) {
+        const meta = data.meta;
+        const navData = data.data; // array sorted latest-first: [{date, nav}, ...]
+
+        // Update page title
+        document.title = `${meta.scheme_name} — FundSense`;
+
+        // Fund name
+        document.getElementById('fund-name').textContent = meta.scheme_name;
+        document.getElementById('breadcrumb-name').textContent = meta.scheme_name.substring(0, 40) + (meta.scheme_name.length > 40 ? '...' : '');
+
+        // Risk badge
+        setRiskBadge(meta.scheme_name);
+
+        // Category chip
+        const categoryText = meta.scheme_category || meta.scheme_type || 'Mutual Fund';
+        document.getElementById('fund-category').textContent = categoryText;
+        document.getElementById('scheme-code-badge').textContent = `#${meta.scheme_code}`;
+
+        // Current NAV
+        const latestNav = parseFloat(navData[0].nav);
+        document.getElementById('current-nav').textContent = `₹${latestNav.toFixed(4)}`;
+        document.getElementById('nav-date').textContent = `as of ${navData[0].date}`;
+
+        // 1-day change
+        if (navData.length >= 2) {
+          const prevNav = parseFloat(navData[1].nav);
+          const dayChange = latestNav - prevNav;
+          const dayChangePct = ((dayChange / prevNav) * 100);
+          const isUp = dayChange >= 0;
+
+          document.getElementById('day-change-icon').innerHTML = isUp
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+          const changeEl = document.getElementById('day-change-value');
+          changeEl.textContent = `${isUp ? '+' : ''}${dayChangePct.toFixed(2)}%`;
+          changeEl.className = `text-sm font-bold ${isUp ? 'text-emerald-400' : 'text-red-400'}`;
+        }
+
+        // Returns
+        setReturn('return-1m', calcReturn(navData, 30));
+        setReturn('return-6m', calcReturn(navData, 182));
+        setReturn('return-1y', calcReturn(navData, 365));
+        setReturn('return-3y', calcCAGR(navData, 3));
+
+        // Fund info
+        document.getElementById('info-code').textContent = meta.scheme_code;
+        document.getElementById('info-house').textContent = meta.fund_house || '—';
+        document.getElementById('info-type').textContent = meta.scheme_type || '—';
+        document.getElementById('info-category').textContent = meta.scheme_category || '—';
+        document.getElementById('info-datapoints').textContent = navData.length.toLocaleString() + ' NAV entries';
+        document.getElementById('info-firstdate').textContent = navData.length > 0 ? navData[navData.length - 1].date : '—';
+
+        // Show content
+        loadingState.classList.add('hidden');
+        fundDetails.classList.remove('hidden');
+      }
+
+      // ── Calculate simple return (%) ──
+      function calcReturn(navData, days) {
+        if (navData.length < 2) return null;
+
+        const latestNav = parseFloat(navData[0].nav);
+        const latestDate = parseDate(navData[0].date);
+
+        // Find NAV closest to `days` ago
+        const targetDate = new Date(latestDate);
+        targetDate.setDate(targetDate.getDate() - days);
+
+        const pastNav = findClosestNav(navData, targetDate);
+        if (!pastNav) return null;
+
+        return ((latestNav - pastNav) / pastNav) * 100;
+      }
+
+      // ── Calculate CAGR (%) ──
+      function calcCAGR(navData, years) {
+        if (navData.length < 2) return null;
+
+        const latestNav = parseFloat(navData[0].nav);
+        const latestDate = parseDate(navData[0].date);
+
+        const targetDate = new Date(latestDate);
+        targetDate.setFullYear(targetDate.getFullYear() - years);
+
+        const pastNav = findClosestNav(navData, targetDate);
+        if (!pastNav) return null;
+
+        const cagr = (Math.pow(latestNav / pastNav, 1 / years) - 1) * 100;
+        return cagr;
+      }
+
+      // ── Find NAV closest to a target date ──
+      function findClosestNav(navData, targetDate) {
+        let closest = null;
+        let minDiff = Infinity;
+
+        for (let i = 0; i < navData.length; i++) {
+          const d = parseDate(navData[i].date);
+          if (!d) continue;
+          const diff = Math.abs(d - targetDate);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = parseFloat(navData[i].nav);
+          }
+          // Since data is sorted latest-first, once we pass the target we can stop soon
+          if (d < targetDate && diff > minDiff) break;
+        }
+
+        // Only accept if within 15 days tolerance
+        if (minDiff > 15 * 24 * 60 * 60 * 1000) return null;
+        return closest;
+      }
+
+      // ── Parse dd-mm-yyyy date ──
+      function parseDate(dateStr) {
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return null;
+        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      }
+
+      // ── Set return value with color ──
+      function setReturn(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (value === null) {
+          el.textContent = 'N/A';
+          el.className = 'text-2xl font-bold tracking-tight text-slate-500';
+          return;
+        }
+        const isPositive = value >= 0;
+        el.textContent = `${isPositive ? '+' : ''}${value.toFixed(2)}%`;
+        el.className = `text-2xl font-bold tracking-tight ${isPositive ? 'text-emerald-400' : 'text-red-400'}`;
+      }
+
+      // ── Risk badge logic ──
+      function setRiskBadge(name) {
+        const n = name.toLowerCase();
+        let label, classes;
+
+        if (n.includes('liquid') || n.includes('overnight') || n.includes('money market')) {
+          label = 'Low Risk';
+          classes = 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25';
+        } else if (n.includes('debt') || n.includes('bond') || n.includes('gilt') || n.includes('fixed')) {
+          label = 'Low-Medium Risk';
+          classes = 'bg-sky-500/15 text-sky-400 border border-sky-500/25';
+        } else if (n.includes('hybrid') || n.includes('balanced') || n.includes('dynamic asset') || n.includes('equity savings')) {
+          label = 'Medium Risk';
+          classes = 'bg-amber-500/15 text-amber-400 border border-amber-500/25';
+        } else {
+          label = 'High Risk';
+          classes = 'bg-red-500/15 text-red-400 border border-red-500/25';
+        }
+
+        const badge = document.getElementById('risk-badge');
+        badge.textContent = label;
+        badge.className = `px-3 py-1 text-xs font-semibold rounded-full ${classes}`;
+      }
+
+      // ── Show error state ──
+      function showError(msg) {
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        errorMessage.textContent = msg;
+      }
+
+    })();
+  </script>
+
+</body>
+
+</html>

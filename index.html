@@ -339,9 +339,7 @@
 
       // ── Select a fund ──
       function selectFund(fund) {
-        alert(`Selected: ${fund.schemeName}\nScheme Code: ${fund.schemeCode}`);
-        searchInput.value = fund.schemeName;
-        showDropdown(false);
+        window.location.href = `fund.html?code=${fund.schemeCode}`;
       }
 
       // ── Debounce helper ──
