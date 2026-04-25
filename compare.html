@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FundSense — Compare mutual funds side by side." />
+  <title>Compare Funds — FundSense</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .gradient-text-logo {
+        background: linear-gradient(135deg, #c7d2fe 0%, #7dd3fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .gradient-text-heading {
+        background: linear-gradient(to right, #ffffff 30%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .gradient-btn {
+        background: linear-gradient(135deg, #6366f1, #0ea5e9);
+      }
+      .glow-indigo {
+        background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      }
+      .glow-sky {
+        background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+      }
+      .search-glass {
+        background: rgba(30, 41, 59, 0.7);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.04);
+      }
+      .card-glass {
+        background: rgba(30, 41, 59, 0.5);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.04);
+      }
+      .winner-highlight {
+        color: #34d399; /* emerald-400 */
+        font-weight: 800;
+        text-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+      }
+    }
+  </style>
+  <style>
+    ::placeholder { color: #475569; }
+    ::selection { background: rgba(99, 102, 241, 0.3); }
+  </style>
+</head>
+
+<body class="m-0 p-0 font-inter bg-slate-900 text-slate-100 min-h-screen overflow-x-hidden">
+
+  <!-- Ambient background glow -->
+  <div class="fixed -top-[30%] -left-[10%] w-[600px] h-[600px] glow-indigo rounded-full pointer-events-none z-0"></div>
+  <div class="fixed -bottom-[20%] -right-[10%] w-[500px] h-[500px] glow-sky rounded-full pointer-events-none z-0"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 sm:px-10 py-4 bg-slate-900/75 backdrop-blur-xl border-b border-white/[0.06]">
+    <!-- Logo -->
+    <a href="index.html" id="logo" class="flex items-center gap-2.5 cursor-pointer no-underline">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="shrink-0">
+        <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+        <path d="M9 22L13 13L17 17L23 9" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="23" cy="9" r="2" fill="white" />
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#6366f1" />
+            <stop offset="1" stop-color="#0ea5e9" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="text-[22px] font-extrabold tracking-tight gradient-text-logo">FundSense</span>
+    </a>
+
+    <!-- Back button & Compare active -->
+    <div class="flex items-center gap-6">
+      <a href="compare.html" class="text-indigo-400 no-underline text-sm font-medium">Compare</a>
+      <a href="index.html" class="flex items-center gap-2 text-slate-400 no-underline text-sm font-medium transition-colors duration-200 hover:text-slate-200">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        <span class="hidden sm:inline">Back to Search</span>
+        <span class="sm:hidden">Back</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="relative z-[1] pt-[100px] pb-20 px-6 max-w-6xl mx-auto">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight gradient-text-heading">Compare Mutual Funds</h1>
+      <p class="text-slate-400 max-w-lg mx-auto">Select two funds to see a side-by-side comparison of their performance, NAV, and risk.</p>
+    </div>
+
+    <!-- Comparison Grid -->
+    <div class="flex flex-col md:flex-row gap-6 items-stretch justify-center relative">
+      
+      <!-- Column A -->
+      <div class="w-full md:w-[45%] flex flex-col gap-4">
+        <div class="relative z-20" id="search-wrapper-1">
+          <div class="search-glass border border-white/[0.08] rounded-xl p-2 flex items-center transition-all focus-within:border-indigo-500/50">
+            <div class="mx-2 text-slate-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <input type="text" id="search-input-1" placeholder="Search Fund A..." autocomplete="off" class="flex-1 bg-transparent border-none outline-none text-sm font-inter text-slate-200 py-2 px-1 w-full" />
+            <button id="clear-btn-1" class="hidden text-slate-400 hover:text-white px-3 py-1 text-lg leading-none cursor-pointer">×</button>
+          </div>
+          <div id="search-dropdown-1" class="hidden absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.08] bg-slate-800/95 backdrop-blur-xl shadow-xl overflow-hidden z-50">
+            <ul id="search-results-1" class="list-none m-0 p-1.5 max-h-[300px] overflow-y-auto"></ul>
+          </div>
+        </div>
+        
+        <!-- Card A Header (Fund Name) -->
+        <div id="header-1" class="hidden text-center px-4">
+           <h3 id="fund-name-1" class="text-lg font-bold text-indigo-100 line-clamp-2 min-h-[56px] flex items-center justify-center"></h3>
+        </div>
+
+        <!-- Card A Data -->
+        <div id="card-1" class="card-glass border border-white/[0.06] rounded-2xl p-6 backdrop-blur-lg hidden flex-1 flex flex-col gap-5">
+           <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Compare Button Container -->
+      <div class="w-full md:w-[10%] flex flex-col items-center justify-start md:pt-[16px] z-10 shrink-0 order-first md:order-none mb-6 md:mb-0">
+         <button id="compare-btn" disabled class="px-6 py-3 text-sm font-bold text-white gradient-btn border-none rounded-full cursor-pointer transition-all hover:shadow-[0_4px_20px_rgba(99,102,241,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center gap-2">
+           <span>Compare</span>
+         </button>
+         
+         <div id="loading-spinner" class="hidden mt-4">
+           <svg class="animate-spin w-6 h-6 text-indigo-400" viewBox="0 0 24 24" fill="none">
+             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25" stroke-width="3" />
+             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+           </svg>
+         </div>
+      </div>
+
+      <!-- Column B -->
+      <div class="w-full md:w-[45%] flex flex-col gap-4">
+        <div class="relative z-20" id="search-wrapper-2">
+          <div class="search-glass border border-white/[0.08] rounded-xl p-2 flex items-center transition-all focus-within:border-sky-500/50">
+            <div class="mx-2 text-slate-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <input type="text" id="search-input-2" placeholder="Search Fund B..." autocomplete="off" class="flex-1 bg-transparent border-none outline-none text-sm font-inter text-slate-200 py-2 px-1 w-full" />
+            <button id="clear-btn-2" class="hidden text-slate-400 hover:text-white px-3 py-1 text-lg leading-none cursor-pointer">×</button>
+          </div>
+          <div id="search-dropdown-2" class="hidden absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.08] bg-slate-800/95 backdrop-blur-xl shadow-xl overflow-hidden z-50">
+            <ul id="search-results-2" class="list-none m-0 p-1.5 max-h-[300px] overflow-y-auto"></ul>
+          </div>
+        </div>
+        
+        <!-- Card B Header (Fund Name) -->
+        <div id="header-2" class="hidden text-center px-4">
+           <h3 id="fund-name-2" class="text-lg font-bold text-sky-100 line-clamp-2 min-h-[56px] flex items-center justify-center"></h3>
+        </div>
+
+        <!-- Card B Data -->
+        <div id="card-2" class="card-glass border border-white/[0.06] rounded-2xl p-6 backdrop-blur-lg hidden flex-1 flex flex-col gap-5">
+           <!-- Rendered via JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Verdict -->
+    <div id="verdict-container" class="mt-8 hidden">
+       <div class="card-glass border border-indigo-500/30 rounded-2xl p-6 backdrop-blur-lg text-center bg-indigo-500/[0.05] max-w-3xl mx-auto">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center justify-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Verdict
+          </h3>
+          <p id="verdict-text" class="text-indigo-200 font-medium leading-relaxed"></p>
+       </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      // ── State ──
+      let allFunds = [];
+      let isDbLoading = true;
+      
+      let fund1 = null; // { code, name }
+      let fund2 = null;
+
+      // ── DOM refs ──
+      const inputs = [
+        document.getElementById('search-input-1'),
+        document.getElementById('search-input-2')
+      ];
+      const dropdowns = [
+        document.getElementById('search-dropdown-1'),
+        document.getElementById('search-dropdown-2')
+      ];
+      const resultsLists = [
+        document.getElementById('search-results-1'),
+        document.getElementById('search-results-2')
+      ];
+      const clearBtns = [
+        document.getElementById('clear-btn-1'),
+        document.getElementById('clear-btn-2')
+      ];
+      const headers = [
+        document.getElementById('header-1'),
+        document.getElementById('header-2')
+      ];
+      const fundNames = [
+        document.getElementById('fund-name-1'),
+        document.getElementById('fund-name-2')
+      ];
+      const cards = [
+        document.getElementById('card-1'),
+        document.getElementById('card-2')
+      ];
+
+      const compareBtn = document.getElementById('compare-btn');
+      const spinner = document.getElementById('loading-spinner');
+      const verdictContainer = document.getElementById('verdict-container');
+      const verdictText = document.getElementById('verdict-text');
+
+      // ── Initialization ──
+      async function init() {
+        try {
+          inputs.forEach(i => { i.placeholder = 'Loading database...'; i.disabled = true; });
+          const res = await fetch('https://api.mfapi.in/mf');
+          if (!res.ok) throw new Error('API error');
+          allFunds = await res.json();
+        } catch (err) {
+          console.error('Failed to load funds:', err);
+        } finally {
+          isDbLoading = false;
+          inputs[0].placeholder = 'Search Fund A...';
+          inputs[1].placeholder = 'Search Fund B...';
+          inputs.forEach(i => { i.disabled = false; });
+        }
+      }
+
+      // ── Search & Dropdown Logic ──
+      function filterFunds(query) {
+        if (!query || query.length < 2) return [];
+        const q = query.toLowerCase();
+        const matches = [];
+        for (let i = 0; i < allFunds.length && matches.length < 8; i++) {
+          if (allFunds[i].schemeName.toLowerCase().includes(q)) {
+            matches.push(allFunds[i]);
+          }
+        }
+        return matches;
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function highlightMatch(text, query) {
+        const idx = text.toLowerCase().indexOf(query.toLowerCase());
+        if (idx === -1) return escapeHtml(text);
+        const before = text.slice(0, idx);
+        const match  = text.slice(idx, idx + query.length);
+        const after  = text.slice(idx + query.length);
+        return `${escapeHtml(before)}<span class="text-indigo-300 font-semibold">${escapeHtml(match)}</span>${escapeHtml(after)}`;
+      }
+
+      function renderResults(results, query, index) {
+        const list = resultsLists[index];
+        list.innerHTML = '';
+
+        if (query.length < 2) {
+          dropdowns[index].classList.add('hidden');
+          return;
+        }
+
+        if (results.length === 0) {
+          list.innerHTML = `<li class="px-4 py-3 text-sm text-slate-400">No funds found for "${escapeHtml(query)}"</li>`;
+          dropdowns[index].classList.remove('hidden');
+          return;
+        }
+
+        results.forEach((fund, i) => {
+          const li = document.createElement('li');
+          li.className = 'px-4 py-2.5 text-sm text-slate-200 rounded-lg cursor-pointer transition-colors hover:bg-indigo-500/15 hover:text-white flex items-center gap-2';
+          li.innerHTML = `
+            <svg class="w-4 h-4 shrink-0 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span class="truncate">${highlightMatch(fund.schemeName, query)}</span>`;
+          li.addEventListener('click', () => selectFund(fund, index));
+          list.appendChild(li);
+        });
+
+        dropdowns[index].classList.remove('hidden');
+      }
+
+      function selectFund(fund, index) {
+        if (index === 0) fund1 = { code: fund.schemeCode, name: fund.schemeName };
+        if (index === 1) fund2 = { code: fund.schemeCode, name: fund.schemeName };
+
+        inputs[index].value = fund.schemeName;
+        dropdowns[index].classList.add('hidden');
+        clearBtns[index].classList.remove('hidden');
+        
+        headers[index].classList.remove('hidden');
+        fundNames[index].textContent = fund.schemeName;
+
+        cards[index].classList.add('hidden');
+        cards[index].innerHTML = '';
+        verdictContainer.classList.add('hidden');
+
+        checkCanCompare();
+      }
+
+      function clearFund(index) {
+        if (index === 0) fund1 = null;
+        if (index === 1) fund2 = null;
+
+        inputs[index].value = '';
+        clearBtns[index].classList.add('hidden');
+        headers[index].classList.add('hidden');
+        cards[index].classList.add('hidden');
+        cards[index].innerHTML = '';
+        verdictContainer.classList.add('hidden');
+        inputs[index].focus();
+
+        checkCanCompare();
+      }
+
+      function checkCanCompare() {
+        if (fund1 && fund2 && fund1.code !== fund2.code) {
+          compareBtn.disabled = false;
+        } else {
+          compareBtn.disabled = true;
+        }
+      }
+
+      // ── Event Listeners ──
+      inputs.forEach((input, index) => {
+        let timer;
+        input.addEventListener('input', () => {
+          clearTimeout(timer);
+          if (index === 0) fund1 = null;
+          if (index === 1) fund2 = null;
+          clearBtns[index].classList.toggle('hidden', input.value.length === 0);
+          checkCanCompare();
+
+          timer = setTimeout(() => {
+            const query = input.value.trim();
+            renderResults(filterFunds(query), query, index);
+          }, 200);
+        });
+
+        input.addEventListener('focus', () => {
+          const query = input.value.trim();
+          if (query.length >= 2 && !(index === 0 && fund1) && !(index === 1 && fund2)) {
+             renderResults(filterFunds(query), query, index);
+          }
+        });
+      });
+
+      clearBtns.forEach((btn, index) => {
+        btn.addEventListener('click', () => clearFund(index));
+      });
+
+      document.addEventListener('click', (e) => {
+        [0, 1].forEach(index => {
+          const wrapper = document.getElementById(`search-wrapper-${index+1}`);
+          if (!wrapper.contains(e.target)) {
+            dropdowns[index].classList.add('hidden');
+          }
+        });
+      });
+
+      // ── Compare Logic ──
+      compareBtn.addEventListener('click', async () => {
+        if (!fund1 || !fund2) return;
+
+        compareBtn.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        verdictContainer.classList.add('hidden');
+
+        try {
+          const [res1, res2] = await Promise.all([
+            fetch(`https://api.mfapi.in/mf/${fund1.code}`),
+            fetch(`https://api.mfapi.in/mf/${fund2.code}`)
+          ]);
+
+          const data1 = await res1.json();
+          const data2 = await res2.json();
+
+          if (data1.status === 'FAIL' || data2.status === 'FAIL') {
+            throw new Error('Failed to load fund details');
+          }
+
+          processAndRenderComparison(data1, data2);
+        } catch (err) {
+          console.error(err);
+          alert('Error fetching fund data for comparison.');
+        } finally {
+          compareBtn.classList.remove('hidden');
+          spinner.classList.add('hidden');
+        }
+      });
+
+      function parseDate(dateStr) {
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return null;
+        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      }
+
+      function findClosestNav(navData, targetDate) {
+        let closest = null;
+        let minDiff = Infinity;
+        for (let i = 0; i < navData.length; i++) {
+          const d = parseDate(navData[i].date);
+          if (!d) continue;
+          const diff = Math.abs(d - targetDate);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = parseFloat(navData[i].nav);
+          }
+          if (d < targetDate && diff > minDiff) break;
+        }
+        if (minDiff > 15 * 24 * 60 * 60 * 1000) return null;
+        return closest;
+      }
+
+      function calcReturn(navData, days) {
+        if (!navData || navData.length < 2) return null;
+        const latestNav = parseFloat(navData[0].nav);
+        const latestDate = parseDate(navData[0].date);
+        const targetDate = new Date(latestDate);
+        targetDate.setDate(targetDate.getDate() - days);
+        const pastNav = findClosestNav(navData, targetDate);
+        if (!pastNav) return null;
+        return ((latestNav - pastNav) / pastNav) * 100;
+      }
+
+      function calcCAGR(navData, years) {
+        if (!navData || navData.length < 2) return null;
+        const latestNav = parseFloat(navData[0].nav);
+        const latestDate = parseDate(navData[0].date);
+        const targetDate = new Date(latestDate);
+        targetDate.setFullYear(targetDate.getFullYear() - years);
+        const pastNav = findClosestNav(navData, targetDate);
+        if (!pastNav) return null;
+        return (Math.pow(latestNav / pastNav, 1 / years) - 1) * 100;
+      }
+
+      function getRiskLevel(name) {
+        const n = name.toLowerCase();
+        if (n.includes('liquid') || n.includes('overnight') || n.includes('money market')) return { level: 1, label: 'Low Risk', class: 'text-emerald-400' };
+        if (n.includes('debt') || n.includes('bond') || n.includes('gilt') || n.includes('fixed')) return { level: 2, label: 'Low-Med Risk', class: 'text-sky-400' };
+        if (n.includes('hybrid') || n.includes('balanced') || n.includes('dynamic')) return { level: 3, label: 'Medium Risk', class: 'text-amber-400' };
+        return { level: 4, label: 'High Risk', class: 'text-red-400' };
+      }
+
+      function processAndRenderComparison(d1, d2) {
+        const n1 = d1.data || [];
+        const n2 = d2.data || [];
+
+        const nav1 = n1.length > 0 ? parseFloat(n1[0].nav) : null;
+        const nav2 = n2.length > 0 ? parseFloat(n2[0].nav) : null;
+
+        const ret1m_1 = calcReturn(n1, 30);
+        const ret1m_2 = calcReturn(n2, 30);
+
+        const ret1y_1 = calcReturn(n1, 365);
+        const ret1y_2 = calcReturn(n2, 365);
+
+        const ret3y_1 = calcCAGR(n1, 3);
+        const ret3y_2 = calcCAGR(n2, 3);
+
+        const risk1 = getRiskLevel(d1.meta.scheme_name);
+        const risk2 = getRiskLevel(d2.meta.scheme_name);
+
+        const win_1m = (ret1m_1 !== null && ret1m_2 !== null) ? (ret1m_1 > ret1m_2 ? 1 : (ret1m_2 > ret1m_1 ? 2 : 0)) : 0;
+        const win_1y = (ret1y_1 !== null && ret1y_2 !== null) ? (ret1y_1 > ret1y_2 ? 1 : (ret1y_2 > ret1y_1 ? 2 : 0)) : 0;
+        const win_3y = (ret3y_1 !== null && ret3y_2 !== null) ? (ret3y_1 > ret3y_2 ? 1 : (ret3y_2 > ret3y_1 ? 2 : 0)) : 0;
+        const win_risk = (risk1.level < risk2.level) ? 1 : (risk2.level < risk1.level ? 2 : 0);
+
+        renderCard(0, { nav: nav1, ret1m: ret1m_1, ret1y: ret1y_1, ret3y: ret3y_1, risk: risk1 }, { w1m: win_1m===1, w1y: win_1y===1, w3y: win_3y===1, wrisk: win_risk===1 });
+        renderCard(1, { nav: nav2, ret1m: ret1m_2, ret1y: ret1y_2, ret3y: ret3y_2, risk: risk2 }, { w1m: win_1m===2, w1y: win_1y===2, w3y: win_3y===2, wrisk: win_risk===2 });
+
+        let verdict = '';
+        let score1 = (win_1m===1?1:0) + (win_1y===1?1:0) + (win_3y===1?1:0);
+        let score2 = (win_1m===2?1:0) + (win_1y===2?1:0) + (win_3y===2?1:0);
+
+        if (score1 > score2 && win_3y === 1) {
+          verdict = `<strong>Fund A</strong> (${d1.meta.scheme_name}) shows stronger overall performance and better long-term returns.`;
+        } else if (score2 > score1 && win_3y === 2) {
+          verdict = `<strong>Fund B</strong> (${d2.meta.scheme_name}) shows stronger overall performance and better long-term returns.`;
+        } else if (win_risk === 1 && score1 >= score2) {
+          verdict = `<strong>Fund A</strong> is the better choice with lower risk and comparable or better returns.`;
+        } else if (win_risk === 2 && score2 >= score1) {
+          verdict = `<strong>Fund B</strong> is the better choice with lower risk and comparable or better returns.`;
+        } else if (score1 === score2 && score1 !== 0) {
+          verdict = `Both funds have very similar performance profiles. Consider checking the fund house and expense ratios.`;
+        } else {
+          verdict = score1 > score2 ? `<strong>Fund A</strong> has better short term performance, but verify long-term consistency.` : `<strong>Fund B</strong> has better short term performance, but verify long-term consistency.`;
+        }
+
+        verdictText.innerHTML = verdict;
+        verdictContainer.classList.remove('hidden');
+      }
+
+      function formatPct(val) {
+        if (val === null) return 'N/A';
+        return `${val >= 0 ? '+' : ''}${val.toFixed(2)}%`;
+      }
+
+      function getRowHtml(label, value, isWinner, isReturn = true) {
+        let valClass = "text-slate-200 font-semibold";
+        if (isReturn && value !== 'N/A') {
+          valClass = parseFloat(value) >= 0 ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold";
+        }
+        if (isWinner) valClass = "winner-highlight";
+        
+        return `
+          <div class="flex justify-between items-center py-3 border-b border-white/[0.04] last:border-0">
+            <span class="text-slate-500 text-sm font-medium uppercase tracking-wide">${label}</span>
+            <span class="${valClass} text-lg flex items-center gap-2">
+              ${value}
+              ${isWinner ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+            </span>
+          </div>
+        `;
+      }
+
+      function renderCard(index, data, wins) {
+        cards[index].innerHTML = `
+          <div class="mb-2">
+             <span class="text-slate-500 text-xs font-medium uppercase tracking-wider block mb-1">Current NAV</span>
+             <span class="text-3xl font-extrabold text-white">₹${data.nav ? data.nav.toFixed(4) : 'N/A'}</span>
+          </div>
+          <div class="flex flex-col">
+            ${getRowHtml('1 Month', formatPct(data.ret1m), wins.w1m)}
+            ${getRowHtml('1 Year', formatPct(data.ret1y), wins.w1y)}
+            ${getRowHtml('3 Year CAGR', formatPct(data.ret3y), wins.w3y)}
+            <div class="flex justify-between items-center py-3 border-b border-white/[0.04] last:border-0">
+              <span class="text-slate-500 text-sm font-medium uppercase tracking-wide">Risk Profile</span>
+              <span class="${data.risk.class} font-bold text-base flex items-center gap-2 ${wins.wrisk ? 'winner-highlight' : ''}">
+                ${data.risk.label}
+                ${wins.wrisk ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+              </span>
+            </div>
+          </div>
+        `;
+        cards[index].classList.remove('hidden');
+      }
+
+      // ── Boot ──
+      init();
+    })();
+  </script>
+
+</body>
+</html>
