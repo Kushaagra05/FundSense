@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FundSense — Personal Portfolio Tracker." />
+  <title>My Portfolio — FundSense</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .gradient-text-logo {
+        background: linear-gradient(135deg, #c7d2fe 0%, #7dd3fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .gradient-text-heading {
+        background: linear-gradient(to right, #ffffff 30%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .gradient-btn {
+        background: linear-gradient(135deg, #6366f1, #0ea5e9);
+      }
+      .glow-indigo {
+        background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      }
+      .glow-sky {
+        background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+      }
+      .card-glass {
+        background: rgba(30, 41, 59, 0.5);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.04);
+      }
+      .search-glass {
+        background: rgba(30, 41, 59, 0.7);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.04);
+      }
+    }
+  </style>
+  <style>
+    ::selection { background: rgba(99, 102, 241, 0.3); }
+    /* Date picker icon styling for dark mode */
+    ::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body class="m-0 p-0 font-inter bg-slate-900 text-slate-100 min-h-screen overflow-x-hidden">
+
+  <!-- Ambient background glow -->
+  <div class="fixed -top-[30%] -left-[10%] w-[600px] h-[600px] glow-indigo rounded-full pointer-events-none z-0"></div>
+  <div class="fixed -bottom-[20%] -right-[10%] w-[500px] h-[500px] glow-sky rounded-full pointer-events-none z-0"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 sm:px-10 py-4 bg-slate-900/75 backdrop-blur-xl border-b border-white/[0.06]">
+    <a href="index.html" id="logo" class="flex items-center gap-2.5 cursor-pointer no-underline">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="shrink-0">
+        <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+        <path d="M9 22L13 13L17 17L23 9" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="23" cy="9" r="2" fill="white" />
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#6366f1" />
+            <stop offset="1" stop-color="#0ea5e9" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="text-[22px] font-extrabold tracking-tight gradient-text-logo">FundSense</span>
+    </a>
+
+    <div class="flex items-center gap-6">
+      <a href="portfolio.html" class="text-indigo-400 no-underline text-sm font-medium">Portfolio</a>
+      <a href="quiz.html" class="text-slate-400 no-underline text-sm font-medium transition-colors duration-200 hover:text-slate-200">Risk Quiz</a>
+      <a href="sip.html" class="text-slate-400 no-underline text-sm font-medium transition-colors duration-200 hover:text-slate-200">SIP Calculator</a>
+      <a href="compare.html" class="text-slate-400 no-underline text-sm font-medium transition-colors duration-200 hover:text-slate-200">Compare</a>
+      <a href="index.html" class="flex items-center gap-2 text-slate-400 no-underline text-sm font-medium transition-colors duration-200 hover:text-slate-200">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        <span class="hidden sm:inline">Back to Search</span>
+        <span class="sm:hidden">Back</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="relative z-[1] pt-[120px] pb-20 px-6 max-w-7xl mx-auto">
+    <div class="mb-10">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight gradient-text-heading">My Portfolio</h1>
+      <p class="text-slate-400">Track all your mutual fund investments in one place.</p>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg mb-10">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+        <div>
+          <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-2">Total Invested</p>
+          <p id="sum-invested" class="text-2xl font-bold text-white tracking-tight">₹0</p>
+        </div>
+        <div>
+          <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-2">Current Value</p>
+          <p id="sum-current" class="text-2xl font-bold text-white tracking-tight">₹0</p>
+        </div>
+        <div>
+          <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-2">Total Return</p>
+          <p id="sum-gain" class="text-2xl font-bold tracking-tight text-slate-400">₹0</p>
+        </div>
+        <div>
+          <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-2">Overall XIRR / %</p>
+          <p id="sum-pct" class="text-2xl font-bold tracking-tight text-slate-400">0.00%</p>
+        </div>
+        <div class="col-span-2 md:col-span-1">
+          <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-2">Top Performer</p>
+          <p id="sum-best" class="text-sm font-semibold text-slate-300 line-clamp-2">—</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Investment Form -->
+    <div class="card-glass relative z-50 border border-white/[0.06] rounded-2xl p-6 backdrop-blur-lg mb-10">
+      <h3 class="text-lg font-bold text-white mb-5">Add Investment</h3>
+      
+      <form id="add-form" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        
+        <!-- Fund Search -->
+        <div class="md:col-span-4 relative z-[9999]" id="search-wrapper">
+          <label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Select Fund</label>
+          <div class="search-glass border border-white/[0.08] rounded-xl p-1 flex items-center transition-all focus-within:border-indigo-500/50">
+            <input type="text" id="search-input" placeholder="Search fund name..." autocomplete="off" class="flex-1 bg-transparent border-none outline-none text-sm font-inter text-slate-200 py-2.5 px-3 w-full" required />
+            <button type="button" id="clear-btn" class="hidden text-slate-400 hover:text-white px-3 cursor-pointer">✕</button>
+          </div>
+          <!-- Dropdown -->
+          <div id="search-dropdown" class="hidden absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.08] bg-slate-800/95 backdrop-blur-xl shadow-xl overflow-hidden z-[9999]">
+            <ul id="search-results" class="list-none m-0 p-1.5 max-h-[250px] overflow-y-auto"></ul>
+          </div>
+        </div>
+
+        <!-- Units -->
+        <div class="md:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Units</label>
+          <input type="number" id="input-units" step="0.001" min="0.001" placeholder="e.g. 150.5" class="w-full bg-slate-800/50 border border-white/[0.08] rounded-xl text-sm text-slate-200 py-3 px-3 outline-none focus:border-indigo-500/50" required />
+        </div>
+
+        <!-- Purchase NAV -->
+        <div class="md:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Purchase NAV</label>
+          <input type="number" id="input-nav" step="0.0001" min="0.0001" placeholder="e.g. 45.23" class="w-full bg-slate-800/50 border border-white/[0.08] rounded-xl text-sm text-slate-200 py-3 px-3 outline-none focus:border-indigo-500/50" required />
+        </div>
+
+        <!-- Date -->
+        <div class="md:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Date</label>
+          <input type="date" id="input-date" class="w-full bg-slate-800/50 border border-white/[0.08] rounded-xl text-sm text-slate-200 py-3 px-3 outline-none focus:border-indigo-500/50" required />
+        </div>
+
+        <!-- Submit -->
+        <div class="md:col-span-2">
+          <button type="submit" id="add-btn" class="w-full py-3 text-sm font-semibold text-white gradient-btn border-none rounded-xl transition-all hover:shadow-[0_4px_20px_rgba(99,102,241,0.4)] disabled:opacity-50 disabled:cursor-not-allowed">
+            Add to Portfolio
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Portfolio Table -->
+    <div class="card-glass border border-white/[0.06] rounded-2xl backdrop-blur-lg overflow-hidden min-h-[300px] relative">
+      <div class="p-6 sm:p-8 border-b border-white/[0.04] flex justify-between items-center">
+        <h3 class="text-xl font-bold text-white">Holdings</h3>
+        <button id="refresh-btn" class="text-slate-400 hover:text-indigo-400 transition-colors" title="Refresh Live NAVs">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Loader -->
+      <div id="table-loader" class="hidden absolute inset-0 bg-slate-900/50 backdrop-blur-sm z-10 flex flex-col items-center justify-center pt-20">
+        <svg class="animate-spin w-8 h-8 text-indigo-400 mb-3" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25" stroke-width="3" />
+          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+        </svg>
+        <p class="text-slate-300 font-medium text-sm">Fetching Live NAVs...</p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[800px]">
+          <thead>
+            <tr class="bg-slate-800/30 border-b border-white/[0.08]">
+              <th class="py-4 px-6 text-slate-400 font-semibold text-xs uppercase tracking-wider">Fund Name</th>
+              <th class="py-4 px-4 text-slate-400 font-semibold text-xs uppercase tracking-wider text-right">Units</th>
+              <th class="py-4 px-4 text-slate-400 font-semibold text-xs uppercase tracking-wider text-right">Buy NAV</th>
+              <th class="py-4 px-4 text-slate-400 font-semibold text-xs uppercase tracking-wider text-right">Invested</th>
+              <th class="py-4 px-4 text-slate-400 font-semibold text-xs uppercase tracking-wider text-right">Cur NAV</th>
+              <th class="py-4 px-4 text-slate-400 font-semibold text-xs uppercase tracking-wider text-right">Cur Value</th>
+              <th class="py-4 px-4 text-slate-400 font-semibold text-xs uppercase tracking-wider text-right">Gain/Loss</th>
+              <th class="py-4 px-6 text-slate-400 font-semibold text-xs uppercase tracking-wider text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="portfolio-body">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16">
+        <div class="text-6xl mb-4">📈</div>
+        <h3 class="text-xl font-bold text-white mb-2">No investments yet</h3>
+        <p class="text-slate-400 text-sm">Add your first investment above to get started tracking your wealth.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      // ── State ──
+      let allFunds = [];
+      let portfolio = []; // { id, code, name, units, buyNav, date, curNav }
+      let selectedFund = null; // {code, name}
+
+      // ── DOM ──
+      const searchInput = document.getElementById('search-input');
+      const searchDropdown = document.getElementById('search-dropdown');
+      const searchResults = document.getElementById('search-results');
+      const clearBtn = document.getElementById('clear-btn');
+      
+      const inputUnits = document.getElementById('input-units');
+      const inputNav = document.getElementById('input-nav');
+      const inputDate = document.getElementById('input-date');
+      const addForm = document.getElementById('add-form');
+
+      const sumInvested = document.getElementById('sum-invested');
+      const sumCurrent = document.getElementById('sum-current');
+      const sumGain = document.getElementById('sum-gain');
+      const sumPct = document.getElementById('sum-pct');
+      const sumBest = document.getElementById('sum-best');
+
+      const tbody = document.getElementById('portfolio-body');
+      const emptyState = document.getElementById('empty-state');
+      const tableLoader = document.getElementById('table-loader');
+      const refreshBtn = document.getElementById('refresh-btn');
+
+      // Set max date to today
+      inputDate.max = new Date().toISOString().split("T")[0];
+
+      // ── Init ──
+      async function init() {
+        loadFromStorage();
+        fetchDatabase(); // for search dropdown
+        if (portfolio.length > 0) {
+          await fetchLiveNavs();
+        } else {
+          renderTable();
+        }
+      }
+
+      function loadFromStorage() {
+        const data = localStorage.getItem('fundsense_portfolio');
+        if (data) {
+          try { portfolio = JSON.parse(data); } 
+          catch(e) { portfolio = []; }
+        }
+      }
+
+      function saveToStorage() {
+        localStorage.setItem('fundsense_portfolio', JSON.stringify(portfolio));
+      }
+
+      // ── Database & Search ──
+      async function fetchDatabase() {
+        try {
+          searchInput.placeholder = 'Loading database...';
+          const res = await fetch('https://api.mfapi.in/mf');
+          if (!res.ok) throw new Error('API Error');
+          allFunds = await res.json();
+          searchInput.placeholder = 'Search fund name...';
+        } catch (e) {
+          searchInput.placeholder = 'Error loading funds';
+        }
+      }
+
+      function filterFunds(query) {
+        if (!query || query.length < 2) return [];
+        const q = query.toLowerCase();
+        return allFunds.filter(f => f.schemeName.toLowerCase().includes(q)).slice(0, 8);
+      }
+
+      searchInput.addEventListener('input', () => {
+        selectedFund = null;
+        clearBtn.classList.toggle('hidden', searchInput.value.length === 0);
+        const query = searchInput.value.trim();
+        const matches = filterFunds(query);
+        renderDropdown(matches, query);
+      });
+
+      function renderDropdown(results, query) {
+        searchResults.innerHTML = '';
+        if (query.length < 2) {
+          searchDropdown.classList.add('hidden');
+          return;
+        }
+        if (results.length === 0) {
+          searchResults.innerHTML = `<li class="px-3 py-2 text-sm text-slate-400">No funds found</li>`;
+          searchDropdown.classList.remove('hidden');
+          return;
+        }
+
+        results.forEach(fund => {
+          const li = document.createElement('li');
+          li.className = 'px-3 py-2 text-sm text-slate-200 rounded-lg cursor-pointer hover:bg-indigo-500/15 hover:text-white truncate';
+          li.textContent = fund.schemeName;
+          li.addEventListener('click', () => {
+            selectedFund = { code: fund.schemeCode, name: fund.schemeName };
+            searchInput.value = fund.schemeName;
+            searchDropdown.classList.add('hidden');
+          });
+          searchResults.appendChild(li);
+        });
+        searchDropdown.classList.remove('hidden');
+      }
+
+      clearBtn.addEventListener('click', () => {
+        selectedFund = null;
+        searchInput.value = '';
+        clearBtn.classList.add('hidden');
+        searchDropdown.classList.add('hidden');
+        searchInput.focus();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!document.getElementById('search-wrapper').contains(e.target)) {
+          searchDropdown.classList.add('hidden');
+        }
+      });
+
+      // ── Add Investment ──
+      addForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!selectedFund) {
+          alert('Please select a valid fund from the dropdown search.');
+          return;
+        }
+
+        const units = parseFloat(inputUnits.value);
+        const buyNav = parseFloat(inputNav.value);
+        const date = inputDate.value;
+
+        if (isNaN(units) || isNaN(buyNav) || !date) return;
+
+        const newEntry = {
+          id: Date.now().toString(),
+          code: selectedFund.code,
+          name: selectedFund.name,
+          units: units,
+          buyNav: buyNav,
+          date: date,
+          curNav: null // will be fetched
+        };
+
+        portfolio.push(newEntry);
+        saveToStorage();
+        
+        // Reset form
+        selectedFund = null;
+        searchInput.value = '';
+        inputUnits.value = '';
+        inputNav.value = '';
+        inputDate.value = '';
+        clearBtn.classList.add('hidden');
+
+        // Refresh data
+        await fetchLiveNavs();
+      });
+
+      // ── Fetch Live NAVs ──
+      async function fetchLiveNavs() {
+        if (portfolio.length === 0) {
+          renderTable();
+          return;
+        }
+
+        tableLoader.classList.remove('hidden');
+        
+        // We will fetch individually. In a real heavy app we'd batch or cache, but here mfapi allows single fetches.
+        // We do Promise.all for speed.
+        const promises = portfolio.map(async (item) => {
+          try {
+            const res = await fetch(`https://api.mfapi.in/mf/${item.code}`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            if (data && data.data && data.data.length > 0) {
+              item.curNav = parseFloat(data.data[0].nav);
+            }
+          } catch(e) {
+            console.error('Failed to fetch nav for', item.code);
+          }
+        });
+
+        await Promise.all(promises);
+        saveToStorage();
+        tableLoader.classList.add('hidden');
+        renderTable();
+      }
+
+      refreshBtn.addEventListener('click', fetchLiveNavs);
+
+      // ── Render ──
+      function formatCur(val) {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
+      }
+
+      window.deleteFund = function(id) {
+        portfolio = portfolio.filter(p => p.id !== id);
+        saveToStorage();
+        renderTable();
+      }
+
+      function renderTable() {
+        tbody.innerHTML = '';
+        
+        if (portfolio.length === 0) {
+          emptyState.classList.remove('hidden');
+          document.querySelector('table').classList.add('hidden');
+          updateSummary(0, 0, null);
+          return;
+        }
+        
+        emptyState.classList.add('hidden');
+        document.querySelector('table').classList.remove('hidden');
+
+        let totalInv = 0;
+        let totalCur = 0;
+        let bestFund = null;
+        let bestPct = -Infinity;
+
+        portfolio.forEach(item => {
+          const invested = item.units * item.buyNav;
+          totalInv += invested;
+
+          const hasCurNav = item.curNav !== null && !isNaN(item.curNav);
+          const current = hasCurNav ? (item.units * item.curNav) : invested;
+          if (hasCurNav) totalCur += current;
+          else totalCur += invested; // Fallback so totals don't break
+
+          const gain = current - invested;
+          const gainPct = (gain / invested) * 100;
+
+          if (hasCurNav && gainPct > bestPct) {
+            bestPct = gainPct;
+            bestFund = item.name;
+          }
+
+          const tr = document.createElement('tr');
+          tr.className = 'border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors';
+          
+          let gainClass = "text-slate-400";
+          let gainSign = "";
+          if (hasCurNav && gain > 0) { gainClass = "text-emerald-400"; gainSign = "+"; }
+          if (hasCurNav && gain < 0) { gainClass = "text-red-400"; }
+
+          tr.innerHTML = `
+            <td class="py-4 px-6">
+              <p class="text-sm font-semibold text-slate-200 line-clamp-1" title="${item.name}">${item.name}</p>
+              <p class="text-xs text-slate-500 mt-1">${item.date}</p>
+            </td>
+            <td class="py-4 px-4 text-right text-sm text-slate-300 font-mono">${item.units.toFixed(3)}</td>
+            <td class="py-4 px-4 text-right text-sm text-slate-300 font-mono">₹${item.buyNav.toFixed(4)}</td>
+            <td class="py-4 px-4 text-right text-sm font-semibold text-slate-200">${formatCur(invested)}</td>
+            <td class="py-4 px-4 text-right text-sm text-slate-300 font-mono">${hasCurNav ? '₹'+item.curNav.toFixed(4) : '—'}</td>
+            <td class="py-4 px-4 text-right text-sm font-semibold text-white">${hasCurNav ? formatCur(current) : '—'}</td>
+            <td class="py-4 px-4 text-right text-sm font-bold ${gainClass}">
+              ${hasCurNav ? gainSign + formatCur(gain) + `<br><span class="text-xs font-medium opacity-80">${gainSign}${gainPct.toFixed(2)}%</span>` : '—'}
+            </td>
+            <td class="py-4 px-6 text-center">
+              <button onclick="deleteFund('${item.id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-colors mx-auto cursor-pointer" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        updateSummary(totalInv, totalCur, bestFund);
+      }
+
+      function updateSummary(inv, cur, bestFund) {
+        sumInvested.textContent = formatCur(inv);
+        sumCurrent.textContent = formatCur(cur);
+        
+        if (inv === 0) {
+          sumGain.textContent = '₹0';
+          sumGain.className = 'text-2xl font-bold tracking-tight text-slate-400';
+          sumPct.textContent = '0.00%';
+          sumPct.className = 'text-2xl font-bold tracking-tight text-slate-400';
+          sumBest.textContent = '—';
+          return;
+        }
+
+        const gain = cur - inv;
+        const pct = (gain / inv) * 100;
+        
+        let colorClass = "text-slate-400";
+        let sign = "";
+        if (gain > 0) { colorClass = "text-emerald-400"; sign = "+"; }
+        if (gain < 0) { colorClass = "text-red-400"; }
+
+        sumGain.textContent = sign + formatCur(gain);
+        sumGain.className = `text-2xl font-bold tracking-tight ${colorClass}`;
+        
+        sumPct.textContent = sign + pct.toFixed(2) + '%';
+        sumPct.className = `text-2xl font-bold tracking-tight ${colorClass}`;
+
+        sumBest.textContent = bestFund || '—';
+      }
+
+      // ── Start ──
+      init();
+    })();
+  </script>
+</body>
+</html>
