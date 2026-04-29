@@ -59,6 +59,17 @@ export default function Home() {
     setActiveIndex(-1);
   }, [query, allFunds]);
 
+  useEffect(() => {
+    if (showDropdown && results.length > 0) {
+      document.body.style.overflowY = 'auto';
+    } else {
+      document.body.style.overflowY = 'hidden';
+    }
+    return () => {
+      document.body.style.overflowY = 'auto';
+    };
+  }, [showDropdown, results]);
+
   // No body overflow manipulation needed as per index.html behavior
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -102,7 +113,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative z-[1] flex flex-col items-center justify-center text-center min-h-screen pt-[120px] pb-20 px-6 box-border">
+    <main className="relative z-[1] flex flex-col items-center justify-center text-center min-h-screen pt-[120px] pb-20 px-6 box-border overflow-x-hidden">
       {/* Ambient background glow */}
       <div className="absolute -top-[30%] -left-[10%] w-[600px] h-[600px] glow-indigo rounded-full pointer-events-none z-0"></div>
       <div className="absolute -bottom-[20%] -right-[10%] w-[500px] h-[500px] glow-sky rounded-full pointer-events-none z-0"></div>
@@ -169,7 +180,7 @@ export default function Home() {
         {/* Dropdown */}
         {showDropdown && query.length > 0 && results.length > 0 && (
           <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-white/[0.08] bg-slate-800/95 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-hidden z-50">
-            <ul className="list-none m-0 p-1.5 max-h-[380px] overflow-y-auto">
+            <ul className="list-none m-0 p-1.5 overflow-hidden">
               {results.map((fund, i) => (
                 <li
                   key={fund.schemeCode}
