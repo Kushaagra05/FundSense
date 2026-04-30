@@ -28,6 +28,7 @@ with Next.js 14, Tailwind CSS, TypeScript.
 - Fund detail AI chat widget (FundChatWidget) below Fund Information
 - Fund chat widget component for fund Q&A
 - Fund chat API route (OpenAI) with short Hinglish answers and a clear verdict
+- Red Flag Detector on fund detail page (1Y/3Y negative returns, fund age < 3 years)
 
 ## Important Rules
 - Always use "use client" for interactive components
@@ -44,8 +45,7 @@ with Next.js 14, Tailwind CSS, TypeScript.
 1. Supabase auth (signup/login/logout)
 2. Save portfolio to Supabase instead of localStorage
 3. Claude/OpenAI API for AI explanations on fund pages
-4. Red Flag Detector on fund detail page
-5. Fund Report Card (A-F grading)
-6. Deploy to Vercel
-7. Connect Namecheap domain
-8. Stripe payments for premium features
+4. Fund Report Card (A-F grading)
+5. Deploy to Vercel
+6. Connect Namecheap domain
+7. Stripe payments for premium features
