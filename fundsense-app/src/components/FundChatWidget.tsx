@@ -93,7 +93,7 @@ export default function FundChatWidget({ fundName, fundContext }: FundChatWidget
           return (
             <div key={`${message.role}-${index}`} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${
+                className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm leading-relaxed whitespace-pre-line ${
                   isUser
                     ? "bg-indigo-500 text-white rounded-br-md"
                     : "bg-slate-700 text-slate-100 rounded-bl-md"

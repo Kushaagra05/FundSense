@@ -27,7 +27,7 @@ with Next.js 14, Tailwind CSS, TypeScript.
 - Live NAV fetching for all portfolio holdings
 - Fund detail AI chat widget (FundChatWidget) below Fund Information
 - Fund chat widget component for fund Q&A
-- Fund chat API route (OpenAI) with short Hinglish answers and a clear verdict
+- Fund chat API route (OpenAI) with max 3 Hinglish bullets and a Bottom line verdict
 - Red Flag Detector on fund detail page (1Y/3Y negative returns, fund age < 3 years)
 
 ## Important Rules
