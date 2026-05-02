@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -16,6 +17,13 @@ export default function Home() {
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchFunds() {
@@ -99,9 +107,11 @@ export default function Home() {
   };
 
   return (
-    <main className="relative z-[1] flex flex-col items-center justify-center text-center min-h-screen pt-[120px] pb-20 px-6 box-border overflow-x-hidden">
-      <div className="absolute -top-[30%] -left-[10%] w-[600px] h-[600px] glow-indigo rounded-full pointer-events-none z-0"></div>
-      <div className="absolute -bottom-[20%] -right-[10%] w-[500px] h-[500px] glow-sky rounded-full pointer-events-none z-0"></div>
+    <main className="relative z-[1] h-[100dvh] overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start text-center pt-[120px] pb-20 px-6 box-border">
+      <div className="absolute top-0 left-0 right-0 h-[100dvh] pointer-events-none overflow-hidden">
+        <div className="absolute -top-[30%] -left-[10%] w-[600px] h-[600px] glow-indigo rounded-full z-0"></div>
+        <div className="absolute -bottom-[20%] -right-[10%] w-[500px] h-[500px] glow-sky rounded-full z-0"></div>
+      </div>
 
       <div className="relative z-10 inline-flex items-center gap-2 px-4 py-1.5 mb-7 text-[13px] font-semibold text-indigo-300 bg-indigo-500/[0.12] border border-indigo-500/25 rounded-full tracking-wide">
         <span className="inline-block w-[7px] h-[7px] bg-indigo-400 rounded-full animate-pulse-dot"></span>
@@ -191,6 +201,71 @@ export default function Home() {
           </span>
         ))}
       </div>
+
+      <section className="relative z-10 mt-16 w-full max-w-6xl mx-auto">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Why FundSense is Different
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+          {[
+            {
+              emoji: '🤖',
+              title: 'AI Fund Chat',
+              subtitle: 'Fund ke baare mein kuch bhi poochiye',
+              href: '/fund/122639#ai-chat',
+            },
+            {
+              emoji: '🚨',
+              title: 'Red Flag Detector',
+              subtitle: 'Koi bhi fund ka risk 1 second mein pakad lijiye',
+              href: '/fund/122639#red-flag',
+            },
+            {
+              emoji: '🏥',
+              title: 'Portfolio Health Score',
+              subtitle: 'Aapka portfolio kitna healthy hai? Check your score',
+              href: '/portfolio#health-score',
+            },
+            {
+              emoji: '🚪',
+              title: 'Should I Exit?',
+              subtitle: 'AI will tell — hold karna hai ya exit',
+              href: '/portfolio#holdings',
+            },
+            {
+              emoji: '🎯',
+              title: 'Smart Recommender',
+              subtitle: 'Aapke risk profile ke hisaab se best funds',
+              href: '/quiz',
+            },
+            {
+              emoji: '⚖️',
+              title: 'Tax Calculator',
+              subtitle: 'Redeem karne se pehle exact tax calculate kariye',
+              href: '/sip#tax',
+            },
+          ].map((feature) => (
+            <Link
+              key={feature.title}
+              href={feature.href}
+              onClick={(event) => {
+                if (feature.href.includes('#')) {
+                  event.preventDefault();
+                  window.location.assign(feature.href);
+                }
+              }}
+              className="rounded-2xl bg-slate-800 border border-white/[0.06] p-4 sm:p-5 text-left shadow-[0_8px_30px_rgba(0,0,0,0.18)] hover:border-indigo-500/40 hover:-translate-y-1 transition-all cursor-pointer no-underline"
+            >
+              <div className="mb-3 text-2xl leading-none">{feature.emoji}</div>
+              <h3 className="text-sm sm:text-base font-bold text-white mb-1.5">{feature.title}</h3>
+              <p className="text-xs sm:text-sm leading-6 text-slate-400">{feature.subtitle}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }

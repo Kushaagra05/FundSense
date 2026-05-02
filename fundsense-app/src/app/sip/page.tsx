@@ -25,6 +25,17 @@ export default function SipCalculator() {
     document.body.style.overflow = "auto";
   }, []);
 
+  // If the URL contains a hash (e.g. #tax), open the corresponding tab on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const h = window.location.hash;
+    if (h === '#tax' || h === '#tax-calculator') {
+      setActiveTab('tax');
+    } else if (h === '#sip') {
+      setActiveTab('sip');
+    }
+  }, []);
+
   const formatCurrency = (num: number) =>
     new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -327,7 +338,7 @@ export default function SipCalculator() {
             </div>
           </>
         ) : (
-          <div className="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg">
+          <div id="tax" className="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg">
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="w-full lg:w-1/2">
                 <h3 className="text-lg font-bold text-white mb-4">Tax Calculator</h3>

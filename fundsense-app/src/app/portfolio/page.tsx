@@ -157,6 +157,16 @@ export default function Portfolio() {
   }, []);
 
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+  }, []);
+
+  useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getUser();
       const user = data.user;
@@ -641,7 +651,7 @@ export default function Portfolio() {
         </div>
         {/* Portfolio Health Score */}
         {portfolio.length > 0 && (
-          <div className="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg mb-10">
+          <div id="health-score" className="card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg mb-10">
             <h3 className="text-lg font-bold text-white mb-5 flex items-center gap-2">
               🏥 Portfolio Health Score
             </h3>
@@ -809,7 +819,7 @@ export default function Portfolio() {
           )}
         </div>
 
-        <div className="card-glass border border-white/[0.06] rounded-2xl backdrop-blur-lg overflow-hidden min-h-[300px] relative">
+        <div id="holdings" className="card-glass border border-white/[0.06] rounded-2xl backdrop-blur-lg overflow-hidden min-h-[300px] relative">
           <div className="p-6 sm:p-8 border-b border-white/[0.04] flex justify-between items-center">
             <h3 className="text-xl font-bold text-white">Holdings</h3>
             <button onClick={fetchLiveNavs} className="text-slate-400 hover:text-indigo-400 transition-colors" title="Refresh" type="button">

@@ -206,6 +206,16 @@ export default function FundDetail() {
     checkWatchlist();
   }, [fund, userId]);
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+  }, []);
+
   const handleToggleWatchlist = async () => {
     if (!fund || watchlistBusy) return;
 
@@ -505,7 +515,7 @@ export default function FundDetail() {
           </div>
         </div>
 
-        <div className="mt-6 bg-slate-800/60 border border-white/[0.06] rounded-2xl p-6 sm:p-8">
+        <div id="red-flag" className="mt-6 bg-slate-800/60 border border-white/[0.06] rounded-2xl p-6 sm:p-8">
           <h2 className="text-base font-bold text-white mb-4">Red Flag Detector</h2>
           {redFlags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
@@ -525,7 +535,7 @@ export default function FundDetail() {
           )}
         </div>
 
-        <div className="mt-6 card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg">
+        <div id="ai-chat" className="mt-6 card-glass border border-white/[0.06] rounded-2xl p-6 sm:p-8 backdrop-blur-lg">
           <h2 className="text-base font-bold text-white mb-5">Ask AI About This Fund</h2>
           <FundChatWidget fundName={meta.scheme_name} fundContext={fundContext} />
         </div>

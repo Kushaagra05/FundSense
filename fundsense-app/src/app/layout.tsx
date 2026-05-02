@@ -16,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-x-hidden">
-      <body className={`${inter.className} bg-slate-900 text-slate-100 m-0 p-0 overflow-x-hidden`}>
+    <html lang="en" className="overflow-hidden">
+      <body className={`${inter.className} bg-slate-900 text-slate-100 m-0 p-0 overflow-x-hidden overflow-y-auto`}>
         <Navbar />
         {children}
       </body>
