@@ -90,6 +90,13 @@ export default function Home() {
   const selectFund = (fund: Fund) => {
     setQuery(fund.schemeName);
     setShowDropdown(false);
+    // guard: ensure schemeCode exists before navigating
+    if (!fund || !fund.schemeCode) {
+      console.warn('Attempted to navigate to fund with missing schemeCode:', fund);
+      alert('Selected fund is missing a valid scheme code. Please try another result.');
+      return;
+    }
+    console.log('Navigating to fund code:', fund.schemeCode);
     router.push(`/fund/${fund.schemeCode}`);
   };
 

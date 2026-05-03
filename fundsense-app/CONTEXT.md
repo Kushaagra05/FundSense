@@ -37,6 +37,7 @@ with Next.js 14, Tailwind CSS, TypeScript.
 - Home feature cards are clickable and link to fund detail, portfolio, quiz, and SIP pages
 - Home feature cards now deep-link to section anchors like fund AI chat, red flags, health score, and holdings
 - Fund detail and portfolio pages now auto-scroll to hash targets on load using `window.location.hash` and a delayed `scrollIntoView` for `#ai-chat`, `#red-flag`, `#health-score`, and `#holdings`
+ - Fund detail now includes a `Share` button next to the watchlist button. On mobile it uses the native `navigator.share` sheet; on desktop it copies the current fund URL to clipboard and shows a small toast "Link copied!" for 2 seconds.
 
 ## Important Rules
 - Always use "use client" for interactive components

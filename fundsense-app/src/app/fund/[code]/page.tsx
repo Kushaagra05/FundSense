@@ -121,6 +121,7 @@ export default function FundDetail() {
   const [userId, setUserId] = useState<string | null>(null);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [watchlistBusy, setWatchlistBusy] = useState(false);
+  const [showCopiedToast, setShowCopiedToast] = useState(false);
 
 
 
@@ -287,6 +288,37 @@ export default function FundDetail() {
     }
   };
 
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    const url = window.location.href;
+    const title = fund?.meta.scheme_name ?? 'Fund';
+    const text = `Check out ${title} on FundSense — AI-powered mutual fund analyzer for Indian investors`;
+
+    try {
+      if (navigator.share) {
+        await (navigator as any).share({ title, text, url });
+        return;
+      }
+    } catch (e) {
+      // ignore share errors and fall back to copy
+    }
+
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (err) {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch {}
+      ta.remove();
+    }
+
+    setShowCopiedToast(true);
+    setTimeout(() => setShowCopiedToast(false), 2000);
+  };
+
   if (loading) {
     return (
       <>
@@ -414,18 +446,34 @@ export default function FundDetail() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight sm:pr-6">
               {meta.scheme_name}
             </h1>
-            <button
-              type="button"
-              onClick={handleToggleWatchlist}
-              disabled={watchlistBusy}
-              className={`shrink-0 px-4 py-2 text-xs font-semibold rounded-lg border transition-colors ${
-                isInWatchlist
-                  ? 'bg-red-500/10 text-red-300 border-red-500/40 hover:bg-red-500/15'
-                  : 'bg-slate-800/70 text-slate-200 border-white/[0.12] hover:bg-slate-700/70'
-              } disabled:opacity-60 disabled:cursor-not-allowed`}
-            >
-              {watchlistBusy ? 'Updating...' : isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleToggleWatchlist}
+                disabled={watchlistBusy}
+                className={`shrink-0 px-4 py-2 text-xs font-semibold rounded-lg border transition-colors ${
+                  isInWatchlist
+                    ? 'bg-red-500/10 text-red-300 border-red-500/40 hover:bg-red-500/15'
+                    : 'bg-slate-800/70 text-slate-200 border-white/[0.12] hover:bg-slate-700/70'
+                } disabled:opacity-60 disabled:cursor-not-allowed`}
+              >
+                {watchlistBusy ? 'Updating...' : isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleShare}
+                aria-label="Share fund"
+                className="shrink-0 px-3 py-2 text-xs font-semibold rounded-lg border border-slate-600 text-white bg-transparent hover:bg-slate-800/60"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 inline-block mr-1 -mt-[1px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" y1="2" x2="12" y2="15" />
+                </svg>
+                Share
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -542,6 +590,13 @@ export default function FundDetail() {
 
       </div>
       </main>
+      {showCopiedToast && (
+        <div className="fixed left-1/2 -translate-x-1/2 bottom-8 z-50">
+          <div className="bg-slate-800 text-white px-4 py-2 rounded-xl shadow-lg">
+            Link copied!
+          </div>
+        </div>
+      )}
     </>
   );
 }
