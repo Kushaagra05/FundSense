@@ -34,6 +34,8 @@ with Next.js 14, Tailwind CSS, TypeScript.
 - Watchlist feature: add/remove from fund detail page; uses Supabase `watchlist` table for logged-in users and `localStorage` fallback for guests
 - Portfolio page includes a Watchlist section with live NAV, 1Y return, 3Y CAGR, `View Fund` link, remove action, and loading skeletons
 - Fund detail, portfolio holdings, and home suggestion chips use skeleton loaders during data fetches
+- App layout includes SEO-friendly metadata (title, description, keywords, Open Graph)
+- Fund detail pages generate dynamic metadata with fund name and current NAV
 - Home page includes a "Why FundSense is Different" section with six feature cards under the search area
 - Home feature cards are clickable and link to fund detail, portfolio, quiz, and SIP pages
 - Home feature cards now deep-link to section anchors like fund AI chat, red flags, health score, and holdings

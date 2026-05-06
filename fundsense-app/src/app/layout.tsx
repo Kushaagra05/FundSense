@@ -7,8 +7,16 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FundSense — Mutual Fund Analyzer",
-  description: "Track, analyze, and compare mutual funds.",
+  title: "FundSense — AI-Powered Mutual Fund Analyzer for Indian Investors",
+  description: "Analyze, compare and track Indian mutual funds with AI. Get fund explanations in Hinglish, red flag detection, portfolio health score and tax calculator. Free for Indian investors.",
+  keywords: "mutual fund analyzer india, SIP calculator, mutual fund comparison, indian mutual funds, portfolio tracker india",
+  openGraph: {
+    title: "FundSense — Smart Mutual Fund Analyzer",
+    description: "AI-powered mutual fund analysis for Indian investors",
+    url: "https://fundsense-app.vercel.app",
+    siteName: "FundSense",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
